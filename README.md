@@ -8,12 +8,12 @@ Built entirely as an independent project — from raw data extraction through to
 
 ## The Problem
 
-No consolidated, ball-by-ball analytical dataset existed for South African women's domestic cricket. Two separate data sources each had part of the picture:
+At the moment, no complete and consolidated ball-by-ball analytical dataset existed for South African women's domestic cricket. Two separate data sources each had part of the picture:
 
 - The **CSA TMS API** provided structured ball-by-ball delivery data but inconsistent player naming and no partnership dimension
 - **CricketArchive** provided authoritative player data and scorecards but required scraping
 
-Neither source alone was sufficient. The pipeline combines both.
+Neither source alone was sufficient, both had gaps in the ball-by-ball data. The pipeline combines both.
 
 ---
 
@@ -22,38 +22,38 @@ Neither source alone was sufficient. The pipeline combines both.
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  TRACK 1 — CSA TMS API (ball-by-ball)                   │
-│                                                          │
-│  GetComps.py                                             │
-│    └─ competitions_master.csv                            │
+│                                                         │
+│  GetComps.py                                            │
+│    └─ competitions_master.csv                           │
 │         └─ (manual filter) competitions.csv             │
-│              └─ RunAllCompetitions.py                    │
-│                   └─ BallByBall_[CompID]_[Fmt]_[Sea].csv │
+│              └─ RunAllCompetitions.py                   │
+│                   └─ BallByBall_[CompID]_[Fmt]_[Sea].csv│
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
 │  TRACK 2 — CricketArchive (enrichment + player data)    │
-│                                                          │
-│  PlayerDetailsExtract.py                                 │
-│    └─ [TournamentName].csv                               │
-│         └─ NormalisePlayers.py + PlayerDesc.csv          │
-│              └─ Merged_Player_Data.csv                   │
-│                                                          │
-│  ballbyballextract.py                                    │
-│    └─ [matchid]_[innings].html                           │
-│         └─ converttocsv.py + Merged_Player_Data.csv      │
-│              └─ match_[match_id].csv                     │
-│                   └─ ball by ball extract.qvf            │
-│                        └─ BallByBallFinal.csv            │
+│                                                         │
+│  PlayerDetailsExtract.py                                │
+│    └─ [TournamentName].csv                              │
+│         └─ NormalisePlayers.py + PlayerDesc.csv         │
+│              └─ Merged_Player_Data.csv                  │
+│                                                         │
+│  ballbyballextract.py                                   │
+│    └─ [matchid]_[innings].html                          │
+│         └─ converttocsv.py + Merged_Player_Data.csv     │
+│              └─ match_[match_id].csv                    │
+│                   └─ ball by ball extract.qvf           │
+│                        └─ BallByBallFinal.csv           │
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
-│  MERGE + PARTNERSHIPS                                    │
-│                                                          │
-│  CricArc CSA Merge.qvf                                   │
-│    └─ MergeResult.csv                                    │
-│         └─ partnerships_extract.py                       │
-│              └─ partnerships_derived.csv                 │
-│                   └─ Analysis_Script.qvs (Dashboard)     │
+│  MERGE + PARTNERSHIPS                                   │
+│                                                         │
+│  CricArc CSA Merge.qvf                                  │
+│    └─ MergeResult.csv                                   │
+│         └─ partnerships_extract.py                      │
+│              └─ partnerships_derived.csv                │
+│                   └─ Analysis_Script.qvs (Dashboard)    │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -80,7 +80,7 @@ Scrapes player profiles from CricketArchive tournament batting pages, extracting
 - **Output:** `[TournamentName].csv`
 
 ### `pipeline/02_players/NormalisePlayers.py`
-Merges scraped player extract files with a manually maintained player descriptor table (`PlayerDesc.csv`). Handles compound South African surnames, derives bowling arm and action from style descriptions, detects wicketkeepers, and presents fuzzy-matched duplicate candidates for manual review before writing the final output.
+Merges scraped player extract files with a manually maintained player descriptor table (`PlayerDesc.csv`). Handles compound South African surnames, derives bowling arm and action from style descriptions, and presents fuzzy-matched duplicate candidates for manual review before writing the final output.
 
 - **Input:** `PlayerDesc.csv` + `[TournamentName].csv` files
 - **Output:** `Merged_Player_Data.csv`
@@ -128,13 +128,37 @@ The final analytical layer is built in QlikView and is not included in this repo
 
 ---
 
+## Dashboard Gallery
+
+### Core Analytical Views
+<table>
+  <tr>
+    <td><p align="center"><b>Player Comparison & Ranking</b></p><img src="images/Bat%20Compare.png" width="400"></td>
+    <td><p align="center"><b>Matchup Analysis</b></p><img src="images/Matchup.png" width="400"></td>
+  </tr>
+  <tr>
+    <td><p align="center"><b>Partnership Dynamics</b></p><img src="images/Partnerships.png" width="400"></td>
+    <td><p align="center"><b>Pressure & Recovery Analysis</b></p><img src="images/Pressure.png" width="400"></td>
+  </tr>
+</table>
+
+<details>
+<summary><b>View Additional Dashboard Sheets (Bowling, Form, Venues)</b></summary>
+
+- **Bowling Analysis:** `images/Bowling.png` & `images/Bowl%20Compare.png`
+- **Innings Construction:** `images/Innings%20Construct.png`
+- **Batter Form Windows:** `images/Bat%20Form.png`
+- **Geographic Venue Data:** `images/Venues.png`
+
+</details>
+
 ## Technical Notes
 
-**Player name normalisation** was one of the core challenges. The CSA TMS API, CricketArchive scorecards, and CricketArchive commentary each use different name formats for the same players. The pipeline resolves this through a combination of exact matching, fuzzy surname matching, and a manually maintained player descriptor table.
+**Player name normalisation** was one of the core challenges. The CSA Match Centre data, CricketArchive scorecards, and CricketArchive commentary each use different name formats for the same players. The pipeline resolves this through a combination of exact matching, fuzzy surname matching, and a manually maintained player descriptor table.
 
-**Partnership derivation** required reconstructing batting partnerships from first principles — CricketArchive scorecards do not publish partnership data directly. The approach walks the batting order sequentially, advancing the striker or non-striker on each dismissal by matching fall-of-wicket surnames against full scorecard names. Edge cases handled include compound surnames (`van Niekerk`, `Viljoen-Louw`), retirement events with optional return, and the final unbroken partnership in not-out innings.
+**Partnership derivation** required reconstructing batting partnerships from first principles — Neither CSA's match centre or CricketArchive publish partnership data directly. The approach walks the batting order sequentially, advancing the striker or non-striker on each dismissal by matching fall-of-wicket surnames against full scorecard names. Edge cases handled include compound surnames (`van Niekerk`, `Viljoen-Louw`), retirement events with optional return, and the final unbroken partnership in not-out innings.
 
-**Dual-source merge** — the CSA TMS API and CricketArchive ball-by-ball data cover overlapping but not identical match sets with different levels of detail. The QlikView merge layer joins them on date, team and innings, with CSA TMS data as the primary source and CricketArchive providing enrichment where available.
+**Dual-source merge** — the CSA TMS API and CricketArchive ball-by-ball data cover overlapping but not identical match sets with different levels of detail. The QlikView merge layer joins them on date, team and innings, with CSA Match Centre data as the primary source and CricketArchive providing enrichment where available.
 
 ---
 
