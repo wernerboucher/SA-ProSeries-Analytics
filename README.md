@@ -148,7 +148,7 @@ The final analytical layer is built in QlikView and is not included in this repo
 * **Bowling Analysis:** [Bowling Overview](images/Bowling.png) & [Bowler Comparison](images/Bowl%20Compare.png)
 * **Innings Construction:** [Innings Build-up](images/Innings%20Construct.png)
 * **Batter Form Windows:** [Form Analysis](images/Bat%20Form.png)
-* **Geographic Venue Data:** [Venues](images/Venues.png)
+* **Venue Based Analysis:** [Venues](images/Venues.png)
 
 </details>
 
