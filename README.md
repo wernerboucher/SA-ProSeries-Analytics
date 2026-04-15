@@ -53,7 +53,7 @@ Neither source alone was sufficient, both had gaps in the ball-by-ball data. The
 │    └─ MergeResult.csv                                   │
 │         └─ partnerships_extract.py                      │
 │              └─ partnerships_derived.csv                │
-│                   └─ Analysis_Script.qvs (Dashboard)    │
+│                   └─ ProSeries_Analysis.qvs (Dashboard) │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -148,7 +148,7 @@ The final analytical layer is built in QlikView and is not included in this repo
 * **Bowling Analysis:** [Bowling Overview](images/Bowling.png) & [Bowler Comparison](images/Bowl%20Compare.png)
 * **Innings Construction:** [Innings Build-up](images/Innings%20Construct.png)
 * **Batter Form Windows:** [Form Analysis](images/Bat%20Form.png)
-* **Geographic Venue Data:** [Venue Map](images/Venues.png)
+* **Geographic Venue Data:** [Venues](images/Venues.png)
 
 </details>
 
