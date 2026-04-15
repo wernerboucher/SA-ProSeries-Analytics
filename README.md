@@ -145,10 +145,10 @@ The final analytical layer is built in QlikView and is not included in this repo
 <details>
 <summary><b>View Additional Dashboard Sheets (Bowling, Form, Venues)</b></summary>
 
-- **Bowling Analysis:** `images/Bowling.png` & `images/Bowl%20Compare.png`
-- **Innings Construction:** `images/Innings%20Construct.png`
-- **Batter Form Windows:** `images/Bat%20Form.png`
-- **Geographic Venue Data:** `images/Venues.png`
+* **Bowling Analysis:** [Bowling Overview](images/Bowling.png) & [Bowler Comparison](images/Bowl%20Compare.png)
+* **Innings Construction:** [Innings Build-up](images/Innings%20Construct.png)
+* **Batter Form Windows:** [Form Analysis](images/Bat%20Form.png)
+* **Geographic Venue Data:** [Venue Map](images/Venues.png)
 
 </details>
 
